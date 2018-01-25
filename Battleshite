@@ -1,0 +1,243 @@
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.GridLayout;
+import java.awt.Image;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.ToolTipManager;
+import javax.swing.UIManager;
+
+public class Main {
+
+	private DrawPanel gamePane;
+	private ship carrier1, carrier2;
+	private ship battleship1, battleship2;
+	private ship cruiser1, cruiser2;
+	private ship submarine1, submarine2;
+	private ship destroyer1, destroyer2;
+	private int shotsf = -1;
+	private bomb[] ammo;
+	private ImageIcon ibomb;
+	private JLabel tL;
+	private String p1t = "Player One's Turn", p2t = "Player Two's Turn";
+
+	private Main() {
+
+		JFrame conv = new JFrame("BATTLESHITE");
+
+		gamePane = new DrawPanel();
+
+		JPanel labels = new JPanel(new FlowLayout());
+
+		conv.setPreferredSize(new Dimension(540, 770));
+		gamePane.setPreferredSize(new Dimension(540, 520));
+		conv.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		ToolTipManager.sharedInstance().setInitialDelay(5000);
+
+		ImageIcon iCarrier = new ImageIcon(Main.class.getResource("/Player1.png"));
+		Image img = iCarrier.getImage();
+		Image newimg = img.getScaledInstance(73, 73, java.awt.Image.SCALE_SMOOTH);
+		iCarrier.setImage(newimg);
+		ImageIcon iBattleship = new ImageIcon(Main.class.getResource("/Player2.png"));
+		img = iBattleship.getImage();
+		newimg = img.getScaledInstance(73, 73, java.awt.Image.SCALE_SMOOTH);
+		iBattleship.setImage(newimg);
+		ImageIcon iCruiser = new ImageIcon(Main.class.getResource("/Player2.png"));
+		img = iCruiser.getImage();
+		newimg = img.getScaledInstance(73, 73, java.awt.Image.SCALE_SMOOTH);
+		iCruiser.setImage(newimg);
+		ImageIcon iSubmarine = new ImageIcon(Main.class.getResource("/Player2.png"));
+		img = iSubmarine.getImage();
+		newimg = img.getScaledInstance(73, 73, java.awt.Image.SCALE_SMOOTH);
+		iSubmarine.setImage(newimg);
+		ImageIcon iDestroyer = new ImageIcon(Main.class.getResource("/Player2.png"));
+		img = iDestroyer.getImage();
+		newimg = img.getScaledInstance(73, 73, java.awt.Image.SCALE_SMOOTH);
+		iDestroyer.setImage(newimg);
+		carrier1 = new ship(0,0, 5, iCarrier); carrier2 = new ship(0,0, 5, iCarrier);
+		battleship1 = new ship(0,0, 4, iBattleship); battleship2 = new ship(0,0, 4, iBattleship);
+		cruiser1 = new ship(0,0, 3, iCruiser); cruiser1 = new ship(0,0, 3, iCruiser);
+		submarine1 = new ship(0,0, 3, iSubmarine); submarine1 = new ship(0,0, 3, iSubmarine);
+		destroyer1 = new ship(0,0, 2, iDestroyer); destroyer1 = new ship(0,0, 2, iDestroyer);
+
+		ibomb = new ImageIcon(Main.class.getResource("/bomb.png"));
+		img = ibomb.getImage();
+		newimg = img.getScaledInstance(73, 73, java.awt.Image.SCALE_SMOOTH);
+		ibomb.setImage(newimg);
+		ammo = new bomb[50];
+
+		JLabel sL = new JLabel("YOUR BOARD | ");
+		tL = new JLabel(p1t);
+		JLabel mL = new JLabel(" | THEIR BOARD");
+		sL.setFont(new Font("Yoyo", Font.BOLD, 24));
+		tL.setFont(new Font("Yoyo", Font.BOLD, 24));
+		mL.setFont(new Font("Yoyo", Font.BOLD, 24));
+		labels.add(sL);
+		labels.add(tL);
+		labels.add(mL);
+
+		conv.add(labels, BorderLayout.NORTH);
+		conv.add(gamePane, BorderLayout.CENTER);
+
+		conv.isResizable();
+		conv.pack();
+		conv.setVisible(true);
+		conv.setBackground(Color.DARK_GRAY);
+
+	}
+
+	private class ship {
+		private int x, y, health;
+		private ImageIcon n;
+		private boolean dead = false;
+		//so im thinking we have an array of tiles and when a tile is hit it finds its corrasponding ship
+		// this ship then "takes a hit" and we subtract one from its health.
+		// at 0 health the ship is destroyed, also tiles onces triggered are brought out of the arry
+		//this way they don't double trigger and just one lucky shot slowly kills the enemy.
+		// then each ship could effect the health of a player
+		// or we could have an array of ships and when empty you lose
+
+		public ship(int x, int y, int health, ImageIcon iplayer1) {
+			this.x = x;
+			this.y = y;
+			this.n = iplayer1;
+			this.health = health;
+		}
+
+		public int getx() {
+
+			return x;
+		}
+
+		public int gety() {
+
+			return y;
+		}
+
+		public void setx(int z) {
+
+			x = z;
+		}
+
+		public void sety(int z) {
+
+			y = z;
+		}
+
+		public void setn(ImageIcon z) {
+
+			n = z;
+		}
+
+		public void paint(Graphics g) {
+			g.drawImage(n.getImage(), x, y, null);
+		}
+	}
+
+
+	private class bomb {
+		private int x;
+		private int y;
+		private ImageIcon n;
+		private int xdirection;
+		private int ydirection;
+
+		public bomb(int x, int y, ImageIcon ibomb, int xd, int yd) {
+			this.x = x;
+			this.y = y;
+			this.n = ibomb;
+			this.xdirection = xd;
+			this.ydirection = yd;
+		}
+
+		public int getx() {
+
+			return x;
+		}
+
+		public int gety() {
+
+			return y;
+		}
+
+		public void setx(int z) {
+
+			x = z;
+		}
+
+		public void sety(int z) {
+
+			y = z;
+		}
+
+		public void turn() {
+			x = x + xdirection;
+			y = y + ydirection;
+		}
+
+		public void paint(Graphics g) {
+			g.drawImage(n.getImage(), x, y, null);
+		}
+	}
+
+	private void endgames() {
+		
+		//just make endgames do everything it already repaints it just needs to 
+		//add the damage marker and do the math.
+		if (player1.dead && player2.dead) {
+			JOptionPane.showMessageDialog(null,
+					"Both players are down! Its a tie!");
+		} else if (player1.dead) {
+			JOptionPane.showMessageDialog(null,
+					"Player 1 is down! Player 2 has won!");
+		} else if (player2.dead) {
+			JOptionPane.showMessageDialog(null,
+					"Player 2 is down! Player 1 has won!");
+		}
+		gamePane.repaint();
+	}
+
+	private class DrawPanel extends JPanel {
+		public void paintComponent(Graphics g) {
+			super.paintComponent(g);
+			super.setBackground(new Color(0, 49, 83));
+
+			g.setColor(Color.GRAY);
+			for (int x = 75; x < 525; x += 75) {
+				g.drawLine(x, 0, x, 525);
+				g.drawLine(0, x, 525, x);
+			}
+			for (int e = -1; e < shotsf; e++) {
+				if (ammo[e + 1] != null) {
+					ammo[e + 1].paint(g);
+				}
+			}
+			player1.paint(g);
+			player2.paint(g);
+		}
+	}
+
+	public static void main(String[] args) {
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} catch (Exception e1) {
+		}
+		javax.swing.SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				// ShowAndTell();
+			}
+		});
+		new Main();
+	}
+}
