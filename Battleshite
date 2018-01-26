@@ -26,9 +26,6 @@ public class Main {
 	private ship cruiser1, cruiser2;
 	private ship submarine1, submarine2;
 	private ship destroyer1, destroyer2;
-	private int shotsf = -1;
-	private bomb[] ammo;
-	private ImageIcon ibomb;
 	private JLabel tL;
 	private String p1t = "Player One's Turn", p2t = "Player Two's Turn";
 
@@ -45,37 +42,21 @@ public class Main {
 		conv.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		ToolTipManager.sharedInstance().setInitialDelay(5000);
 
-		ImageIcon iCarrier = new ImageIcon(Main.class.getResource("/Player1.png"));
-		Image img = iCarrier.getImage();
-		Image newimg = img.getScaledInstance(73, 73, java.awt.Image.SCALE_SMOOTH);
-		iCarrier.setImage(newimg);
-		ImageIcon iBattleship = new ImageIcon(Main.class.getResource("/Player2.png"));
-		img = iBattleship.getImage();
-		newimg = img.getScaledInstance(73, 73, java.awt.Image.SCALE_SMOOTH);
-		iBattleship.setImage(newimg);
-		ImageIcon iCruiser = new ImageIcon(Main.class.getResource("/Player2.png"));
-		img = iCruiser.getImage();
-		newimg = img.getScaledInstance(73, 73, java.awt.Image.SCALE_SMOOTH);
-		iCruiser.setImage(newimg);
-		ImageIcon iSubmarine = new ImageIcon(Main.class.getResource("/Player2.png"));
-		img = iSubmarine.getImage();
-		newimg = img.getScaledInstance(73, 73, java.awt.Image.SCALE_SMOOTH);
-		iSubmarine.setImage(newimg);
-		ImageIcon iDestroyer = new ImageIcon(Main.class.getResource("/Player2.png"));
-		img = iDestroyer.getImage();
-		newimg = img.getScaledInstance(73, 73, java.awt.Image.SCALE_SMOOTH);
-		iDestroyer.setImage(newimg);
-		carrier1 = new ship(0,0, 5, iCarrier); carrier2 = new ship(0,0, 5, iCarrier);
-		battleship1 = new ship(0,0, 4, iBattleship); battleship2 = new ship(0,0, 4, iBattleship);
-		cruiser1 = new ship(0,0, 3, iCruiser); cruiser1 = new ship(0,0, 3, iCruiser);
-		submarine1 = new ship(0,0, 3, iSubmarine); submarine1 = new ship(0,0, 3, iSubmarine);
-		destroyer1 = new ship(0,0, 2, iDestroyer); destroyer1 = new ship(0,0, 2, iDestroyer);
-
-		ibomb = new ImageIcon(Main.class.getResource("/bomb.png"));
-		img = ibomb.getImage();
-		newimg = img.getScaledInstance(73, 73, java.awt.Image.SCALE_SMOOTH);
-		ibomb.setImage(newimg);
-		ammo = new bomb[50];
+		ImageIcon iShip = new ImageIcon(Main.class.getResource("/ship.png"));
+		Image img = iShip.getImage();
+		Image newimg = img.getScaledInstance(75, 75*5, java.awt.Image.SCALE_SMOOTH);
+		iShip.setImage(newimg);
+		carrier1 = new ship(0,0, 5, iShip); carrier2 = new ship(0,0, 5, iShip);
+		newimg = img.getScaledInstance(75, 75*4, java.awt.Image.SCALE_SMOOTH);
+		iShip.setImage(newimg);
+		battleship1 = new ship(0,0, 4, iShip); battleship2 = new ship(0,0, 4, iShip);
+		newimg = img.getScaledInstance(75, 75*3, java.awt.Image.SCALE_SMOOTH);
+		iShip.setImage(newimg);
+		cruiser1 = new ship(0,0, 3, iShip); cruiser2 = new ship(0,0, 3, iShip);
+		submarine1 = new ship(0,0, 3, iShip); submarine2 = new ship(0,0, 3, iShip);
+		newimg = img.getScaledInstance(75, 75*2, java.awt.Image.SCALE_SMOOTH);
+		iShip.setImage(newimg);
+		destroyer1 = new ship(0,0, 2, iShip); destroyer2 = new ship(0,0, 2, iShip);
 
 		JLabel sL = new JLabel("YOUR BOARD | ");
 		tL = new JLabel(p1t);
