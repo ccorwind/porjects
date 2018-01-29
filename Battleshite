@@ -4,13 +4,11 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.GridLayout;
 import java.awt.Image;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -18,7 +16,7 @@ import javax.swing.JPanel;
 import javax.swing.ToolTipManager;
 import javax.swing.UIManager;
 
-public class Main {
+public class Main implements MouseListener{
 
 	private DrawPanel gamePane;
 	private ship carrier1, carrier2;
@@ -26,9 +24,10 @@ public class Main {
 	private ship cruiser1, cruiser2;
 	private ship submarine1, submarine2;
 	private ship destroyer1, destroyer2;
+	private bomb[] ammo;
+	private int shotsf = -1;
 	private JLabel tL;
 	private String p1t = "Player One's Turn", p2t = "Player Two's Turn";
-
 	private Main() {
 
 		JFrame conv = new JFrame("BATTLESHITE");
@@ -37,24 +36,24 @@ public class Main {
 
 		JPanel labels = new JPanel(new FlowLayout());
 
-		conv.setPreferredSize(new Dimension(540, 770));
-		gamePane.setPreferredSize(new Dimension(540, 520));
+		conv.setPreferredSize(new Dimension(920, 620));
+		gamePane.setPreferredSize(new Dimension(770, 540));
 		conv.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		ToolTipManager.sharedInstance().setInitialDelay(5000);
 
 		ImageIcon iShip = new ImageIcon(Main.class.getResource("/ship.png"));
 		Image img = iShip.getImage();
-		Image newimg = img.getScaledInstance(75, 75*5, java.awt.Image.SCALE_SMOOTH);
+		Image newimg = img.getScaledInstance(60, 60*5, java.awt.Image.SCALE_SMOOTH);
 		iShip.setImage(newimg);
 		carrier1 = new ship(0,0, 5, iShip); carrier2 = new ship(0,0, 5, iShip);
-		newimg = img.getScaledInstance(75, 75*4, java.awt.Image.SCALE_SMOOTH);
+		newimg = img.getScaledInstance(60, 60*4, java.awt.Image.SCALE_SMOOTH);
 		iShip.setImage(newimg);
 		battleship1 = new ship(0,0, 4, iShip); battleship2 = new ship(0,0, 4, iShip);
-		newimg = img.getScaledInstance(75, 75*3, java.awt.Image.SCALE_SMOOTH);
+		newimg = img.getScaledInstance(60, 60*3, java.awt.Image.SCALE_SMOOTH);
 		iShip.setImage(newimg);
 		cruiser1 = new ship(0,0, 3, iShip); cruiser2 = new ship(0,0, 3, iShip);
 		submarine1 = new ship(0,0, 3, iShip); submarine2 = new ship(0,0, 3, iShip);
-		newimg = img.getScaledInstance(75, 75*2, java.awt.Image.SCALE_SMOOTH);
+		newimg = img.getScaledInstance(60, 60*2, java.awt.Image.SCALE_SMOOTH);
 		iShip.setImage(newimg);
 		destroyer1 = new ship(0,0, 2, iShip); destroyer2 = new ship(0,0, 2, iShip);
 
@@ -105,6 +104,9 @@ public class Main {
 
 			return y;
 		}
+		public int getHealth(){
+			return health;
+		}
 
 		public void setx(int z) {
 
@@ -114,6 +116,9 @@ public class Main {
 		public void sety(int z) {
 
 			y = z;
+		}
+		public void setHealth(int z){
+			health = z;
 		}
 
 		public void setn(ImageIcon z) {
@@ -131,60 +136,33 @@ public class Main {
 		private int x;
 		private int y;
 		private ImageIcon n;
-		private int xdirection;
-		private int ydirection;
 
-		public bomb(int x, int y, ImageIcon ibomb, int xd, int yd) {
+		public bomb(int x, int y, ImageIcon ibomb) {
 			this.x = x;
 			this.y = y;
 			this.n = ibomb;
-			this.xdirection = xd;
-			this.ydirection = yd;
-		}
-
-		public int getx() {
-
-			return x;
-		}
-
-		public int gety() {
-
-			return y;
-		}
-
-		public void setx(int z) {
-
-			x = z;
-		}
-
-		public void sety(int z) {
-
-			y = z;
-		}
-
-		public void turn() {
-			x = x + xdirection;
-			y = y + ydirection;
 		}
 
 		public void paint(Graphics g) {
-			g.drawImage(n.getImage(), x, y, null);
+			g.drawImage(n.getImage(), x, y, null);}
 		}
-	}
-
+	
 	private void endgames() {
 		
 		//just make endgames do everything it already repaints it just needs to 
 		//add the damage marker and do the math.
-		if (player1.dead && player2.dead) {
+		if (carrier1.health == 0){carrier1.dead = true;} if (carrier2.health == 0){carrier2.dead = true;}
+		if (battleship1.health == 0){battleship1.dead = true;} if (battleship2.health == 0){battleship2.dead = true;}
+		if (cruiser1.health == 0){cruiser1.dead = true;} if (cruiser2.health == 0){cruiser2.dead = true;}
+		if (submarine1.health == 0){submarine1.dead = true;} if (submarine2.health == 0){submarine2.dead = true;}
+		if (destroyer1.health == 0){destroyer1.dead = true;} if (destroyer2.health == 0){destroyer2.dead = true;}
+		
+		if ( carrier1.dead && battleship1.dead && cruiser1.dead && submarine1.dead && destroyer1.dead) {
 			JOptionPane.showMessageDialog(null,
-					"Both players are down! Its a tie!");
-		} else if (player1.dead) {
+					"Player 1's ships have been sunk! Player 2 has won!");
+		} else if (carrier2.dead && battleship2.dead && cruiser2.dead && submarine2.dead && destroyer2.dead) {
 			JOptionPane.showMessageDialog(null,
-					"Player 1 is down! Player 2 has won!");
-		} else if (player2.dead) {
-			JOptionPane.showMessageDialog(null,
-					"Player 2 is down! Player 1 has won!");
+					"Player 2's ships have been sunk! Player 1 has won!");
 		}
 		gamePane.repaint();
 	}
@@ -195,17 +173,21 @@ public class Main {
 			super.setBackground(new Color(0, 49, 83));
 
 			g.setColor(Color.GRAY);
-			for (int x = 75; x < 525; x += 75) {
-				g.drawLine(x, 0, x, 525);
-				g.drawLine(0, x, 525, x);
+			for (int x = 60; x < 920; x += 60) {
+				g.drawLine(x, 0, x, 600);
+				g.drawLine(0, x, 920, x);
+				g.drawRect(480, 0, 480, 600);
 			}
 			for (int e = -1; e < shotsf; e++) {
 				if (ammo[e + 1] != null) {
 					ammo[e + 1].paint(g);
 				}
 			}
-			player1.paint(g);
-			player2.paint(g);
+			carrier1.paint(g); carrier2.paint(g);
+			battleship1.paint(g); battleship2.paint(g);
+			cruiser1.paint(g); cruiser2.paint(g);
+			submarine1.paint(g); submarine2.paint(g);
+			destroyer1.paint(g); destroyer2.paint(g);
 		}
 	}
 
@@ -221,4 +203,13 @@ public class Main {
 		});
 		new Main();
 	}
+
+	public void mouseClicked(MouseEvent arg0) {
+	
+}
+
+	public void mouseEntered(MouseEvent e) {}
+	public void mouseExited(MouseEvent e) {}
+	public void mousePressed(MouseEvent e) {}
+	public void mouseReleased(MouseEvent e) {}
 }
