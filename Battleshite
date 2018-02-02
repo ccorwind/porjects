@@ -5,6 +5,7 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
@@ -26,13 +27,19 @@ public class Main implements MouseListener{
 	private ship submarine1, submarine2;
 	private ship destroyer1, destroyer2;
 	private bomb[] ammo;
-	private int shotsf = -1, shipPlace = 0;
-	private JLabel tL;
-	private String p1t = "Player One's Turn", p2t = "Player Two's Turn";
+	private int shotsf = -1, shipPlace = 0 , gamePhase = 0;
+	private JLabel sL = new JLabel(""), tL = new JLabel(""), mL = new JLabel("");
+	private String p1t = "Your Turn", p2t = "Their Turn";
 	private ImageIcon iShipVer, iShipHor, iShip;
 	private Image imgVer, imgHor, newImg; 
+	String player = "";
 	private Main() {
-
+		if(JOptionPane.showConfirmDialog (null, "Are you the host?") == 0){
+			player = "HOST";
+		}else player = "CLIENT";
+		phase0();
+	}
+	private void phase0(){
 		JFrame conv = new JFrame("BATTLESHITE");
 
 		gamePane = new DrawPanel();
@@ -47,32 +54,20 @@ public class Main implements MouseListener{
 		
 		iShipVer = new ImageIcon(Main.class.getResource("/shipVer.png"));
 		iShipHor = new ImageIcon(Main.class.getResource("/shipHor.png"));
-		newImg = iShipVer.getImage();
-		iShipVer.setImage(newImg.getScaledInstance(60, (60*5), java.awt.Image.SCALE_SMOOTH));
-		newImg = iShipHor.getImage();
-		iShipHor.setImage(newImg.getScaledInstance(60, (60*5), java.awt.Image.SCALE_SMOOTH));
+		imgVer = iShipVer.getImage();
+		iShipVer.setImage(imgVer.getScaledInstance(60, (60*5), java.awt.Image.SCALE_SMOOTH));
+		imgHor = iShipHor.getImage();
+		iShipHor.setImage(imgHor.getScaledInstance((60*5), 60, java.awt.Image.SCALE_SMOOTH));
 		
+		carrier1 = new ship(-1000,-1000, 5, iShipVer, iShipHor); carrier2 = new ship(-1000,-1000, 5, iShipVer, iShipHor);
 		
-		newimg = imgHor.getScaledInstance(60, (60*5), java.awt.Image.SCALE_SMOOTH);
-		iShipHor.setImage(newimg);
-		carrier1 = new ship(0,0, 5, iShip); carrier2 = new ship(0,0, 5, iShip);
-		newimg = img.getScaledInstance(60, 60*4, java.awt.Image.SCALE_SMOOTH);
-		iShip.setImage(newimg);
-		battleship1 = new ship(0,0, 4, iShip); battleship2 = new ship(0,0, 4, iShip);
-		newimg = img.getScaledInstance(60, 60*3, java.awt.Image.SCALE_SMOOTH);
-		iShip.setImage(newimg);
-		cruiser1 = new ship(0,0, 3, iShip); cruiser2 = new ship(0,0, 3, iShip);
-		submarine1 = new ship(0,0, 3, iShip); submarine2 = new ship(0,0, 3, iShip);
-		newimg = img.getScaledInstance(60, 60*2, java.awt.Image.SCALE_SMOOTH);
-		iShip.setImage(newimg);
-		destroyer1 = new ship(0,0, 2, iShip); destroyer2 = new ship(0,0, 2, iShip);
-
-		JLabel sL = new JLabel("YOUR BOARD | ");
-		tL = new JLabel(p1t);
-		JLabel mL = new JLabel(" | THEIR BOARD");
-		sL.setFont(new Font("Yoyo", Font.BOLD, 24));
-		tL.setFont(new Font("Yoyo", Font.BOLD, 24));
-		mL.setFont(new Font("Yoyo", Font.BOLD, 24));
+		battleship1 = new ship(-1000,-1000, 4, iShipVer, iShipHor); battleship2 = new ship(-1000,-1000, 4, iShipVer, iShipHor);
+		
+		cruiser1 = new ship(-1000,-1000, 3, iShipVer, iShipHor); cruiser2 = new ship(-1000,-1000, 3, iShipVer, iShipHor);
+		submarine1 = new ship(-1000,-1000, 3, iShipVer, iShipHor); submarine2 = new ship(-1000,-1000, 3, iShipVer, iShipHor);
+		
+		destroyer1 = new ship(-1000,-1000, 2, iShipVer, iShipHor); destroyer2 = new ship(-1000,-1000, 2, iShipVer, iShipHor);
+		
 		labels.add(sL);
 		labels.add(tL);
 		labels.add(mL);
@@ -84,12 +79,37 @@ public class Main implements MouseListener{
 		conv.pack();
 		conv.setVisible(true);
 		conv.setBackground(Color.DARK_GRAY);
+	//	gamePane.addMouseListener();
+		
 
 	}
 
+	private void phase1(){
+		sL.setFont(new Font("Yoyo", Font.BOLD, 24));
+		tL.setFont(new Font("Yoyo", Font.BOLD, 24));
+		mL.setFont(new Font("Yoyo", Font.BOLD, 24));
+		tL.setText("IF YOUR SEEING THIS SOMETHING IS BROKEN");
+		sL.setText("HOW BOARD? ");
+		mL.setText("SO BOARD!");
+		if(player == "HOST"){
+			sL.setText("YOUR BOARD | ");
+			mL.setText(" | THEIR BOARD");
+			tL.setText(p1t);
+		}else if (player == "CLIENT"){
+			sL.setText("THEIR BOARD | ");
+			mL.setText(" | YOUR BOARD");
+			tL.setText(p2t);
+		}
+	}
+	
 	private void setShips(){
 		
 		token1 = true;
+		if(player == "HOST"){
+			carrier1.rotate(); battleship1.rotate(); cruiser1.rotate(); submarine1.rotate(); destroyer1.rotate();
+		}else if(player == "CLIENT"){
+			carrier2.rotate(); battleship2.rotate(); cruiser2.rotate(); submarine2.rotate(); destroyer2.rotate();
+		}
 	}
 	
 	private class ship {
@@ -140,7 +160,7 @@ public class Main implements MouseListener{
 			health = z;
 		}
 
-		public void rotate(ImageIcon z) {
+		public void rotate() {
 			if (token1 == false){
 				n = imgHor;	
 				}
@@ -208,9 +228,11 @@ public class Main implements MouseListener{
 		if ( carrier1.dead && battleship1.dead && cruiser1.dead && submarine1.dead && destroyer1.dead) {
 			JOptionPane.showMessageDialog(null,
 					"Player 1's ships have been sunk! Player 2 has won!");
+			gamePhase++;
 		} else if (carrier2.dead && battleship2.dead && cruiser2.dead && submarine2.dead && destroyer2.dead) {
 			JOptionPane.showMessageDialog(null,
 					"Player 2's ships have been sunk! Player 1 has won!");
+			gamePhase++;
 		}
 		gamePane.repaint();
 	}
@@ -220,22 +242,29 @@ public class Main implements MouseListener{
 			super.paintComponent(g);
 			super.setBackground(new Color(0, 49, 83));
 
+			carrier1.paint(g); carrier2.paint(g);
+			battleship1.paint(g); battleship2.paint(g);
+			cruiser1.paint(g); cruiser2.paint(g);
+			submarine1.paint(g); submarine2.paint(g);
+			destroyer1.paint(g); destroyer2.paint(g);
+			
+			if(gamePhase == 1 || gamePhase == 0){
+				if(player == "HOST"){
+					g.fillRect(480, 0, 920, 600);
+				}else if(player == "CLIENT"){
+					g.fillRect(0, 0, 480, 600);
+				}
+			}
 			g.setColor(Color.GRAY);
 			for (int x = 60; x < 960; x += 60) {
 				g.drawLine(x, 0, x, 550);
 				g.drawLine(0, x, 960, x);
-				g.drawRect(0, 0, 480, 600);
 			}
 			for (int e = -1; e < shotsf; e++) {
 				if (ammo[e + 1] != null) {
 					ammo[e + 1].paint(g);
 				}
 			}
-			carrier1.paint(g); carrier2.paint(g);
-			battleship1.paint(g); battleship2.paint(g);
-			cruiser1.paint(g); cruiser2.paint(g);
-			submarine1.paint(g); submarine2.paint(g);
-			destroyer1.paint(g); destroyer2.paint(g);
 		}
 	}
 
@@ -246,14 +275,16 @@ public class Main implements MouseListener{
 		}
 		javax.swing.SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				// ShowAndTell();
+				new  Main();
 			}
 		});
-		new Main();
+		
 	}
 
-	public void mouseClicked(MouseEvent arg0) {
-	
+	public void mouseClicked(MouseEvent e) {
+		Point z = new Point(e.getPoint());
+		
+		gamePane.repaint();
 }
 
 	public void mouseEntered(MouseEvent e) {}
