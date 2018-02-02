@@ -148,14 +148,17 @@ public class Main implements MouseListener{
 		}
 
 		public void setx(int z) {
-
 			x = z;
 		}
 
 		public void sety(int z) {
-
 			y = z;
 		}
+		
+		public void setXY(int z1, int z2){
+		x = z1; y = z2;
+		}
+		
 		public void setHealth(int z){
 			health = z;
 		}
@@ -283,7 +286,53 @@ public class Main implements MouseListener{
 
 	public void mouseClicked(MouseEvent e) {
 		Point z = new Point(e.getPoint());
-		
+		if(gamePhase == 0){
+			if(player == "HOST"){
+				if(shipPlace == 0){
+				carrier1.setXY(z.x, z.y);
+				shipPlace++;
+				}
+				if(shipPlace == 1){
+				battleship1.setXY(z.x, z.y);
+				shipPlace++;
+				}
+				if(shipPlace == 2){
+				crusier1.setXY(z.x, z.y);
+				shipPlace++;
+				}
+				if(shipPlace == 3){
+				submarine1.setXY(z.x, z.y);
+				shipPlace++;
+				}
+				if(shipPlace == 4){
+				destroyer1.setXY(z.x, z.y);
+				shipPlace++;
+				}
+			} else if(player == "CLIENT"){
+				if(shipPlace == 0){
+				carrier2.setXY(z.x, z.y);
+				shipPlace++;
+				}
+				if(shipPlace == 1){
+				battleship2.setXY(z.x, z.y);
+				shipPlace++;
+				}
+				if(shipPlace == 2){
+				crusier2.setXY(z.x, z.y);
+				shipPlace++;
+				}
+				if(shipPlace == 3){
+				submarine2.setXY(z.x, z.y);
+				shipPlace++;
+				}
+				if(shipPlace == 4){
+				destroyer2.setXY(z.x, z.y);
+				shipPlace++;
+				}
+			}
+		}else if(gamePhase == 1){
+		//bombshiz
+		}
 		gamePane.repaint();
 }
 
