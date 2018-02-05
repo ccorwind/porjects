@@ -180,7 +180,7 @@ public class Main implements MouseListener{
 		for (int x = 0; x < 960; x += 60) {
 			if (x < z && z < (x+60)){
 				space = space + 1;
-				return space;
+				return (space * 60);
 			}
 			else space = space + 1;
 		}
@@ -193,7 +193,7 @@ public class Main implements MouseListener{
 		for (int x = 0; x < 540; x += 60) {
 			if (x < z && z < (x+60)){
 				space = space + 1;
-				return space;
+				return (space * 60);
 			}
 			else space = space + 1;
 		}
@@ -285,7 +285,8 @@ public class Main implements MouseListener{
 	}
 
 	public void mouseClicked(MouseEvent e) {
-		Point z = new Point(e.getPoint());
+		Point w = new Point(e.getPoint());
+		Point z = new Point(calculateSpaceX(w.x),  calculateSpaceY(w.y));
 		if(gamePhase == 0){
 			if(player == "HOST"){
 				if(shipPlace == 0){
@@ -297,7 +298,7 @@ public class Main implements MouseListener{
 				shipPlace++;
 				}
 				if(shipPlace == 2){
-				crusier1.setXY(z.x, z.y);
+				cruiser1.setXY(z.x, z.y);
 				shipPlace++;
 				}
 				if(shipPlace == 3){
@@ -307,6 +308,7 @@ public class Main implements MouseListener{
 				if(shipPlace == 4){
 				destroyer1.setXY(z.x, z.y);
 				shipPlace++;
+				gamePhase = 1;
 				}
 			} else if(player == "CLIENT"){
 				if(shipPlace == 0){
@@ -318,7 +320,7 @@ public class Main implements MouseListener{
 				shipPlace++;
 				}
 				if(shipPlace == 2){
-				crusier2.setXY(z.x, z.y);
+				cruiser2.setXY(z.x, z.y);
 				shipPlace++;
 				}
 				if(shipPlace == 3){
@@ -328,6 +330,7 @@ public class Main implements MouseListener{
 				if(shipPlace == 4){
 				destroyer2.setXY(z.x, z.y);
 				shipPlace++;
+				gamePhase = 1;
 				}
 			}
 		}else if(gamePhase == 1){
