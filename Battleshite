@@ -71,6 +71,15 @@ public class Main implements MouseListener{
 		labels.add(sL);
 		labels.add(tL);
 		labels.add(mL);
+		if(player == "HOST"){
+			sL.setText("YOUR BOARD | ");
+			mL.setText(" | THEIR BOARD");
+			tL.setText(p1t);
+		}else if (player == "CLIENT"){
+			sL.setText("THEIR BOARD | ");
+			mL.setText(" | YOUR BOARD");
+			tL.setText(p2t);
+		}
 
 		conv.add(labels, BorderLayout.NORTH);
 		conv.add(gamePane, BorderLayout.CENTER);
@@ -92,12 +101,8 @@ public class Main implements MouseListener{
 		sL.setText("HOW BOARD? ");
 		mL.setText("SO BOARD!");
 		if(player == "HOST"){
-			sL.setText("YOUR BOARD | ");
-			mL.setText(" | THEIR BOARD");
 			tL.setText(p1t);
 		}else if (player == "CLIENT"){
-			sL.setText("THEIR BOARD | ");
-			mL.setText(" | YOUR BOARD");
 			tL.setText(p2t);
 		}
 	}
