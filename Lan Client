@@ -1,0 +1,99 @@
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.InetAddress;
+import java.net.Socket;
+
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JTextArea;
+
+
+public class overNet {
+
+	private JFrame                frame;
+	private JTextArea             textArea;
+	private ObjectOutputStream    output;
+	private ObjectInputStream     input;
+	private String                serverIP;
+	private Socket                connection;
+	private boolean               isConnected = false;
+	private String                netName = "Player-2";
+	private Actions				  move;
+	
+	public overNet(){
+		//client v1
+		 frame.setVisible(true);
+	     netName = JOptionPane.showInputDialog(null, "Enter player-2 nickname");
+	     String ipEntered = JOptionPane.showInputDialog(null, "Enter the ip address to establish connection !");
+
+	     if(ipEntered.equals("localhost")||ipEntered.equals("")){
+	         ipEntered = "127.0.0.1";
+	     }
+
+	     if(netName.trim().length() == 0){
+	         netName = "Player-2";
+	     }
+	     if(netName.toCharArray().length > 15){
+	         netName = "Player-2";
+	     }
+	     serverIP = ipEntered;
+	     startNet();
+	}
+	
+	private void startNet() {
+		try{
+			textArea.append("\nAttempting connection");
+		    connection = new Socket(InetAddress.getByName(serverIP),6789);
+		    textArea.append("\nConnected to :"+connection.getInetAddress().getHostName());
+		    output = new ObjectOutputStream(connection.getOutputStream());
+		    output.flush();
+		    input = new ObjectInputStream(connection.getInputStream()); 
+		    isConnected = true;
+		    whileConnected();
+		}catch(IOException ex){ 
+			textArea.append("\nClient terminated connection");
+			}
+		
+	}
+
+	private void whileConnected() {
+		while(isConnected){
+			try{
+				move = (Actions) input.readObject();
+				determineMove(move);
+			}catch(Exception e){
+				
+			}
+		}
+		
+	}
+
+	private void determineMove(Actions move) {
+		if(move.movement > 0){
+			if(move.movement == 1){		}//left
+			if(move.movement == 2){		}//right
+			if(move.movement == 3){		}//up
+			if(move.movement == 4){		}//down
+		}
+		else if (move.shot > 0){
+			if(move.shot == 1){		}//left
+			if(move.shot == 2){		}//right
+			if(move.shot == 3){		}//up
+			if(move.shot == 4){		}//down
+			
+		}
+	}
+
+	public static void main(String[] args) throws IOException {
+	    new overNet();
+
+	}
+	public class Actions{
+		int movement;
+		int shot;
+	}
+	public class GameBoard{
+		
+	}
+}
