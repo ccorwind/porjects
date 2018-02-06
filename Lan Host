@@ -1,0 +1,371 @@
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.GridLayout;
+import java.awt.Image;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.InetAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
+
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextArea;
+import javax.swing.ToolTipManager;
+import javax.swing.AbstractButton;
+
+
+public class underNet {
+
+	private JFrame                frame;
+	private JTextArea             textArea;
+	private ObjectOutputStream    output;
+	private ObjectInputStream     input;
+	private String                serverIP;
+	private ServerSocket          server;
+	private Socket                connection;
+	private boolean               isConnected = false;
+	private String                netName;
+	private Actions				  move;
+	private static final int PORT = 6789;
+	private DrawPanel gamePane;
+	private player player1;
+	private  player player2;
+	private ShowAndTell game;
+	
+	public underNet(){
+		//client v1
+		 frame.setVisible(true);
+		 netName = JOptionPane.showInputDialog(null, "Enter Player-1 nickname");
+		 if(netName.trim().length() == 0){
+	         netName = "Player-1";
+	     }
+	     if(netName.toCharArray().length > 15){
+	         netName = "Player-1";
+	         
+	     }
+	}
+	
+	private void startNet() {
+		try{
+			server = new ServerSocket(PORT);
+	        System.out.println(InetAddress.getLocalHost());
+			textArea.append("\nAttempting connection");
+		    connection = new Socket(InetAddress.getByName(serverIP),6789);
+		    textArea.append("\nConnected to :"+connection.getInetAddress().getHostName());
+		    output = new ObjectOutputStream(connection.getOutputStream());
+		    output.flush();
+		    input = new ObjectInputStream(connection.getInputStream()); 
+		    isConnected = true;
+		    whileConnected();
+		}catch(IOException ex){ 
+			textArea.append("\nClient terminated connection");
+			}
+		
+	}
+
+	private void whileConnected() {
+		while(isConnected){
+			try{
+				move = (Actions) input.readObject();
+				game.determineMove(move);
+			}catch(Exception e){
+				
+			}
+		}
+	}
+
+
+
+	public static void main(String[] args) throws IOException {
+	    new underNet();
+	}
+	public class Actions{
+		int movement;
+		int shot;
+	}
+
+	public class ShowAndTell {
+		private  void ShowAndTell() {
+
+			JFrame conv = new JFrame("Slowshot");
+			gamePane = new DrawPanel();
+			JPanel labels = new JPanel(new FlowLayout());
+			JPanel buttonSet = new JPanel(new GridLayout(3, 1));
+			JPanel buttonHolder1 = new JPanel(new GridLayout(1, 2));
+			JPanel buttonHolder2 = new JPanel(new GridLayout(1, 4));
+			JPanel buttonHolder3 = new JPanel(new GridLayout(1, 2));
+
+			conv.setPreferredSize(new Dimension(540, 750));
+			gamePane.setPreferredSize(new Dimension(540, 520));
+			conv.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			ToolTipManager.sharedInstance().setInitialDelay(5000);
+			JButton button[] = new JButton[8];
+			button[0] = new JButton();
+			button[1] = new JButton();
+			button[2] = new JButton();
+			button[3] = new JButton();
+			button[4] = new JButton();
+			button[5] = new JButton();
+			button[6] = new JButton();
+			button[7] = new JButton();
+			button[0].addActionListener( new ActionListener(){
+				public void actionPerformed(ActionEvent e) {
+				if (player1.turn){
+					
+					player2.turn = true;
+				}else if (player2.turn){
+					
+					player1.turn = true;
+				}}});
+			button[1].addActionListener( new ActionListener(){
+				public void actionPerformed(ActionEvent e) {
+				if (player1.turn){
+					
+					player2.turn = true;
+				}else if (player2.turn){
+					
+					player1.turn = true;
+				}}});
+			button[2].addActionListener( new ActionListener(){
+				public void actionPerformed(ActionEvent e) {
+				if (player1.turn){
+					
+					player2.turn = true;
+				}else if (player2.turn){
+					
+					player1.turn = true;
+				}}});
+			button[3].addActionListener( new ActionListener(){
+				public void actionPerformed(ActionEvent e) {
+				if (player1.turn){
+					
+					player2.turn = true;
+				}else if (player2.turn){
+					
+					player1.turn = true;
+				}}});
+			button[4].addActionListener( new ActionListener(){
+				public void actionPerformed(ActionEvent e) {
+				if (player1.turn){
+					moveit(0,-75,player1);
+					player2.turn = true;
+				}else if (player2.turn){
+					moveit(0,-75,player2);
+					player1.turn = true;
+				}}});
+			button[5].addActionListener( new ActionListener(){
+				public void actionPerformed(ActionEvent e) {
+				if (player1.turn){
+					moveit(-75,0,player1);
+					player2.turn = true;
+				}else if (player2.turn){
+					moveit(-75,0,player2);
+					player1.turn = true;
+				}}});
+			button[6].addActionListener( new ActionListener(){
+				public void actionPerformed(ActionEvent e) {
+				if (player1.turn){
+					moveit(75,0,player1);
+					player2.turn = true;
+				}else if (player2.turn){
+					moveit(75,0,player2);
+					player1.turn = true;
+				}}});
+			button[7].addActionListener( new ActionListener(){
+				public void actionPerformed(ActionEvent e) {
+				if (player1.turn){
+					moveit(0,75,player1);
+					player2.turn = true;
+				}else if (player2.turn){
+					moveit(0,75,player2);
+					player1.turn = true;
+				}}});
+			
+			
+
+			ImageIcon up_A = new ImageIcon("images/Up_Arrow.png");
+			Image img = up_A.getImage();
+			Image newimg = img.getScaledInstance(50, 50, java.awt.Image.SCALE_SMOOTH);
+			up_A.setImage(newimg);
+			ImageIcon down_A = new ImageIcon("images/Down_Arrow.png");
+			img = down_A.getImage();
+			newimg = img.getScaledInstance(50, 50, java.awt.Image.SCALE_SMOOTH);
+			down_A.setImage(newimg);
+			ImageIcon left_A = new ImageIcon("images/Left_Arrow.png");
+			img = left_A.getImage();
+			newimg = img.getScaledInstance(50, 50, java.awt.Image.SCALE_SMOOTH);
+			left_A.setImage(newimg);
+			ImageIcon right_A = new ImageIcon("images/Right_Arrow.png");
+			img = right_A.getImage();
+			newimg = img.getScaledInstance(50, 50, java.awt.Image.SCALE_SMOOTH);
+			right_A.setImage(newimg);
+			
+			
+			ImageIcon iplayer1 = new ImageIcon("images/player1.png");
+			img = iplayer1.getImage();
+			newimg = img.getScaledInstance(73, 73, java.awt.Image.SCALE_SMOOTH);
+			iplayer1.setImage(newimg);
+			ImageIcon iplayer2 = new ImageIcon("images/player2.png");
+			img = iplayer2.getImage();
+			newimg = img.getScaledInstance(73, 73, java.awt.Image.SCALE_SMOOTH);
+			iplayer2.setImage(newimg);
+			player1 = new player(75,300,iplayer1);
+			player1.turn = true;
+			player2 = new player(375,300,iplayer2);
+
+			button[0].setIcon(up_A);
+			button[0].setToolTipText("Keybind is s + \u2191");
+			button[1].setIcon(left_A);
+			button[1].setToolTipText("Keybind is s + \u2190");
+			button[2].setIcon(right_A);
+			button[2].setToolTipText("Keybind is s + \u2192");
+			button[3].setIcon(down_A);
+			button[3].setToolTipText("Keybind is s + \u2193");
+			button[4].setIcon(up_A);
+			button[4].setToolTipText("Keybind is m + \u2191");
+			button[5].setIcon(left_A);
+			button[5].setToolTipText("Keybind is m + \u2190");
+			button[6].setIcon(right_A);
+			button[6].setToolTipText("Keybind is m + \u2192");
+			button[7].setIcon(down_A);
+			button[7].setToolTipText("Keybind is m + \u2193");
+
+			buttonHolder1.add(button[0], BorderLayout.WEST);
+			buttonHolder1.add(button[4], BorderLayout.EAST);
+			buttonHolder2.add(button[1], BorderLayout.NORTH);
+			buttonHolder2.add(button[2], BorderLayout.NORTH);
+			buttonHolder2.add(button[5], BorderLayout.NORTH);
+			buttonHolder2.add(button[6], BorderLayout.NORTH);
+			buttonHolder3.add(button[3], BorderLayout.NORTH);
+			buttonHolder3.add(button[7], BorderLayout.NORTH);
+
+			buttonSet.add(buttonHolder1, BorderLayout.NORTH);
+			buttonSet.add(buttonHolder2, BorderLayout.CENTER);
+			buttonSet.add(buttonHolder3, BorderLayout.SOUTH);
+
+			JLabel sL = new JLabel("SHOOT");
+			JLabel mL = new JLabel("MOVE");
+
+			sL.setFont(new Font("Yoyo", Font.BOLD, 24));
+			mL.setFont(new Font("Yoyo", Font.BOLD, 24));
+			labels.add(sL);
+			labels.add(mL);
+
+			conv.add(gamePane, BorderLayout.NORTH);
+			conv.add(buttonSet, BorderLayout.CENTER);
+			conv.add(labels, BorderLayout.SOUTH);
+
+			conv.isResizable();
+			conv.isFocusableWindow();
+			conv.pack();
+			conv.setVisible(true);
+			conv.setBackground(Color.DARK_GRAY);
+		
+		}
+		
+		private void determineMove(Actions move) {
+			if(move.movement > 0){
+				if(move.movement == 1){	button[7].doClick();	}//left
+				if(move.movement == 2){		}//right
+				if(move.movement == 3){		}//up
+				if(move.movement == 4){		}//down
+			}
+			else if (move.shot > 0){
+				if(move.shot == 1){		}//left
+				if(move.shot == 2){		}//right
+				if(move.shot == 3){		}//up
+				if(move.shot == 4){		}//down
+				
+			}
+		}
+	
+		private void moveit(int x,int y, player pl){
+		int e =	pl.getx();
+		int p =	pl.gety();
+		
+			
+			pl.setx(e + x);
+			pl.sety(p + y);
+			pl.turn = false;
+			gamePane.repaint();
+		}
+		
+		
+	
+		
+		public void actionPerformed(ActionEvent arg0) {
+
+		}}
+	private static class player{
+		private int x;
+		private int y;
+		private ImageIcon n;
+		private boolean dead = false;
+		private boolean turn = false;
+		
+		public player(int x, int y, ImageIcon iplayer1){
+			this.x = x;
+			this.y = y;
+			this.n = iplayer1;
+		}
+		
+		public int getx(){
+			
+			return x;
+		}
+		public int gety(){
+	
+			return y;
+		}
+		public ImageIcon getn(){
+	
+			return n;
+		}
+		public void setx(int z){
+			
+			x=z;
+		}
+		public void sety(int z){
+			
+			y=z;
+		}
+		public void setn(ImageIcon z){
+			
+			n=z;
+		}
+
+		public void paint(Graphics g) {
+			g.drawImage(n.getImage(), x, y, null);
+		}
+	}
+	private class DrawPanel extends JPanel {
+		public void paintComponent(Graphics g) {
+			super.paintComponent(g);
+			super.setBackground(new Color(0, 49, 83));
+			
+			
+
+			g.setColor(Color.GRAY);
+			for (int x = 75; x < 525; x += 75) {
+				g.drawLine(x, 0, x, 525);
+				g.drawLine(0, x, 525, x);
+
+			}
+			
+			player1.paint(g);
+			player2.paint(g);
+		}
+	}
+}
