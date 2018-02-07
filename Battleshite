@@ -34,10 +34,11 @@ public class Main implements MouseListener{
 	private Image imgVer, imgHor, newImg; 
 	String player = "";
 	private Main() {
-		if(JOptionPane.showConfirmDialog (null, "Are you the host?") == 0){
-			player = "HOST";
-		}else player = "CLIENT";
-		phase0();
+		int host = JOptionPane.showConfirmDialog (null, "Are you the host?");
+		if(host == 0){player = "HOST";}
+		else if (host == 1){player = "CLIENT";}
+		if (player == "HOST" || player == "CLIENT"){phase0();}
+		else{System.exit(0);}
 	}
 	private void phase0(){
 		JFrame conv = new JFrame("BATTLESHITE");
@@ -67,19 +68,22 @@ public class Main implements MouseListener{
 		submarine1 = new ship(-1000,-1000, 3, iShipVer, iShipHor); submarine2 = new ship(-1000,-1000, 3, iShipVer, iShipHor);
 		
 		destroyer1 = new ship(-1000,-1000, 2, iShipVer, iShipHor); destroyer2 = new ship(-1000,-1000, 2, iShipVer, iShipHor);
-		
-		labels.add(sL);
-		labels.add(tL);
-		labels.add(mL);
 		if(player == "HOST"){
 			sL.setText("YOUR BOARD | ");
 			mL.setText(" | THEIR BOARD");
-			tL.setText(p1t);
 		}else if (player == "CLIENT"){
 			sL.setText("THEIR BOARD | ");
 			mL.setText(" | YOUR BOARD");
-			tL.setText(p2t);
 		}
+		tL.setText("Set up your Ships!");
+		
+		sL.setFont(new Font("Yoyo", Font.BOLD, 24));
+		tL.setFont(new Font("Yoyo", Font.BOLD, 24));
+		mL.setFont(new Font("Yoyo", Font.BOLD, 24));
+		labels.add(sL);
+		labels.add(tL);
+		labels.add(mL);
+	
 
 		conv.add(labels, BorderLayout.NORTH);
 		conv.add(gamePane, BorderLayout.CENTER);
@@ -88,15 +92,13 @@ public class Main implements MouseListener{
 		conv.pack();
 		conv.setVisible(true);
 		conv.setBackground(Color.DARK_GRAY);
-	//	gamePane.addMouseListener();
+		gamePane.addMouseListener(this);
+		
 		
 
 	}
 
 	private void phase1(){
-		sL.setFont(new Font("Yoyo", Font.BOLD, 24));
-		tL.setFont(new Font("Yoyo", Font.BOLD, 24));
-		mL.setFont(new Font("Yoyo", Font.BOLD, 24));
 		tL.setText("IF YOUR SEEING THIS SOMETHING IS BROKEN");
 		sL.setText("HOW BOARD? ");
 		mL.setText("SO BOARD!");
@@ -108,8 +110,6 @@ public class Main implements MouseListener{
 	}
 	
 	private void setShips(){
-		
-		token1 = true;
 		if(player == "HOST"){
 			carrier1.rotate(); battleship1.rotate(); cruiser1.rotate(); submarine1.rotate(); destroyer1.rotate();
 		}else if(player == "CLIENT"){
@@ -169,10 +169,8 @@ public class Main implements MouseListener{
 		}
 
 		public void rotate() {
-			if (token1 == false){
-				n = imgHor;	
-				}
-			else n = imgVer;
+			if (token1 == false){n = imgHor; token1 = true;}
+			else{n = imgVer; token1 = false;}
 		}
 
 		public void paint(Graphics g) {
@@ -184,7 +182,6 @@ public class Main implements MouseListener{
 		int space = 0;
 		for (int x = 0; x < 960; x += 60) {
 			if (x < z && z < (x+60)){
-				space = space + 1;
 				return (space * 60);
 			}
 			else space = space + 1;
@@ -197,7 +194,6 @@ public class Main implements MouseListener{
 		int space = 0;
 		for (int x = 0; x < 540; x += 60) {
 			if (x < z && z < (x+60)){
-				space = space + 1;
 				return (space * 60);
 			}
 			else space = space + 1;
@@ -290,51 +286,49 @@ public class Main implements MouseListener{
 	}
 
 	public void mouseClicked(MouseEvent e) {
-		Point w = new Point(e.getPoint());
-		Point z = new Point(calculateSpaceX(w.x),  calculateSpaceY(w.y));
+		Point z = new Point(calculateSpaceX(e.getX()),  calculateSpaceY(e.getY()));
+		System.out.print(gamePhase);
 		if(gamePhase == 0){
 			if(player == "HOST"){
 				if(shipPlace == 0){
 				carrier1.setXY(z.x, z.y);
 				shipPlace++;
-				}
+				}else
 				if(shipPlace == 1){
 				battleship1.setXY(z.x, z.y);
 				shipPlace++;
-				}
+				}else
 				if(shipPlace == 2){
 				cruiser1.setXY(z.x, z.y);
 				shipPlace++;
-				}
+				}else
 				if(shipPlace == 3){
 				submarine1.setXY(z.x, z.y);
 				shipPlace++;
-				}
+				}else
 				if(shipPlace == 4){
 				destroyer1.setXY(z.x, z.y);
-				shipPlace++;
 				gamePhase = 1;
 				}
 			} else if(player == "CLIENT"){
 				if(shipPlace == 0){
 				carrier2.setXY(z.x, z.y);
 				shipPlace++;
-				}
+				}else
 				if(shipPlace == 1){
 				battleship2.setXY(z.x, z.y);
 				shipPlace++;
-				}
+				}else
 				if(shipPlace == 2){
 				cruiser2.setXY(z.x, z.y);
 				shipPlace++;
-				}
+				}else
 				if(shipPlace == 3){
 				submarine2.setXY(z.x, z.y);
 				shipPlace++;
-				}
+				}else
 				if(shipPlace == 4){
 				destroyer2.setXY(z.x, z.y);
-				shipPlace++;
 				gamePhase = 1;
 				}
 			}
