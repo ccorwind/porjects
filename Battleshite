@@ -10,6 +10,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -30,8 +31,8 @@ public class Main implements MouseListener{
 	private int shotsf = -1, shipPlace = 0 , gamePhase = 0;
 	private JLabel sL = new JLabel(""), tL = new JLabel(""), mL = new JLabel("");
 	private String p1t = "Your Turn", p2t = "Their Turn";
-	private ImageIcon iShipVer, iShipHor, iShip;
-	private Image imgVer, imgHor, newImg; 
+	private ImageIcon iShipVer, iShipHor;
+	private Image imgVer, imgHor; 
 	String player = "";
 	private Main() {
 		int host = JOptionPane.showConfirmDialog (null, "Are you the host?");
@@ -59,15 +60,18 @@ public class Main implements MouseListener{
 		iShipVer.setImage(imgVer.getScaledInstance(60, (60*5), java.awt.Image.SCALE_SMOOTH));
 		imgHor = iShipHor.getImage();
 		iShipHor.setImage(imgHor.getScaledInstance((60*5), 60, java.awt.Image.SCALE_SMOOTH));
-		
 		carrier1 = new ship(-1000,-1000, 5, iShipVer, iShipHor); carrier2 = new ship(-1000,-1000, 5, iShipVer, iShipHor);
-		
+		iShipVer.setImage(imgVer.getScaledInstance(60, (60*4), java.awt.Image.SCALE_SMOOTH));
+		iShipHor.setImage(imgHor.getScaledInstance((60*4), 60, java.awt.Image.SCALE_SMOOTH));
 		battleship1 = new ship(-1000,-1000, 4, iShipVer, iShipHor); battleship2 = new ship(-1000,-1000, 4, iShipVer, iShipHor);
-		
+		iShipVer.setImage(imgVer.getScaledInstance(60, (60*3), java.awt.Image.SCALE_SMOOTH));
+		iShipHor.setImage(imgHor.getScaledInstance((60*3), 60, java.awt.Image.SCALE_SMOOTH));
 		cruiser1 = new ship(-1000,-1000, 3, iShipVer, iShipHor); cruiser2 = new ship(-1000,-1000, 3, iShipVer, iShipHor);
 		submarine1 = new ship(-1000,-1000, 3, iShipVer, iShipHor); submarine2 = new ship(-1000,-1000, 3, iShipVer, iShipHor);
-		
+		iShipVer.setImage(imgVer.getScaledInstance(60, (60*2), java.awt.Image.SCALE_SMOOTH));
+		iShipHor.setImage(imgHor.getScaledInstance((60*2), 60, java.awt.Image.SCALE_SMOOTH));
 		destroyer1 = new ship(-1000,-1000, 2, iShipVer, iShipHor); destroyer2 = new ship(-1000,-1000, 2, iShipVer, iShipHor);
+		
 		if(player == "HOST"){
 			sL.setText("YOUR BOARD | ");
 			mL.setText(" | THEIR BOARD");
@@ -83,6 +87,9 @@ public class Main implements MouseListener{
 		labels.add(sL);
 		labels.add(tL);
 		labels.add(mL);
+		
+		JLabel rotation = new JLabel("");
+		JButton rotates = new JButton("");
 	
 
 		conv.add(labels, BorderLayout.NORTH);
@@ -123,12 +130,16 @@ public class Main implements MouseListener{
 		private ImageIcon imgVer;
 		private ImageIcon imgHor;
 		private boolean dead = false;
+		private Point[] weakPoints;
+		
 		//so im thinking we have an array of tiles and when a tile is hit it finds its corrasponding ship
 		// this ship then "takes a hit" and we subtract one from its health.
 		// at 0 health the ship is destroyed, also tiles onces triggered are brought out of the arry
 		//this way they don't double trigger and just one lucky shot slowly kills the enemy.
 		// then each ship could effect the health of a player
 		// or we could have an array of ships and when empty you lose
+		/////////////////////////////
+		//give ships array of points to compare for taking damage, delete points from array as time goes on to prevent bugs
 
 		public ship(int x, int y, int health, ImageIcon imgVer, ImageIcon imgHor) {
 			this.x = x;
@@ -137,6 +148,10 @@ public class Main implements MouseListener{
 			this.imgHor = imgHor;
 			this.health = health;
 			this.n = imgVer;
+			weakPoints = new Point[health];
+			for(int i = 0; i < weakPoints.length; i++) {
+			    weakPoints[i] = new Point();
+			}
 		}
 
 		public int getx() {
@@ -186,8 +201,6 @@ public class Main implements MouseListener{
 			}
 			else space = space + 1;
 		}
-		JOptionPane.showMessageDialog(null,
-				"Somethings fucky!");
 		return -1;
 	}
 	private int calculateSpaceY(int z){
@@ -198,8 +211,6 @@ public class Main implements MouseListener{
 			}
 			else space = space + 1;
 		}
-		JOptionPane.showMessageDialog(null,
-				"Somethings fucky!");
 		return -1;
 	}
 
@@ -287,9 +298,8 @@ public class Main implements MouseListener{
 
 	public void mouseClicked(MouseEvent e) {
 		Point z = new Point(calculateSpaceX(e.getX()),  calculateSpaceY(e.getY()));
-		System.out.print(gamePhase);
 		if(gamePhase == 0){
-			if(player == "HOST"){
+			if(player == "HOST" && z.x <= 479){
 				if(shipPlace == 0){
 				carrier1.setXY(z.x, z.y);
 				shipPlace++;
@@ -310,7 +320,7 @@ public class Main implements MouseListener{
 				destroyer1.setXY(z.x, z.y);
 				gamePhase = 1;
 				}
-			} else if(player == "CLIENT"){
+			} else if(player == "CLIENT" && z.x >= 480){
 				if(shipPlace == 0){
 				carrier2.setXY(z.x, z.y);
 				shipPlace++;
@@ -333,7 +343,13 @@ public class Main implements MouseListener{
 				}
 			}
 		}else if(gamePhase == 1){
-		//bombshiz
+			if(player == "HOST" && z.x >= 479){
+				
+				
+			} else if(player == "CLIENT" && z.x <= 480){
+				
+				
+			}
 		}
 		gamePane.repaint();
 }
