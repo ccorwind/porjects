@@ -6,6 +6,8 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
@@ -20,7 +22,7 @@ import javax.swing.UIManager;
 
 public class Main implements MouseListener{
 
-	private boolean token1 = false;
+	
 	private DrawPanel gamePane;
 	private ship carrier1, carrier2;
 	private ship battleship1, battleship2;
@@ -40,6 +42,7 @@ public class Main implements MouseListener{
 		else if (host == 1){player = "CLIENT";}
 		if (player == "HOST" || player == "CLIENT"){phase0();}
 		else{System.exit(0);}
+		
 	}
 	private void phase0(){
 		JFrame conv = new JFrame("BATTLESHITE");
@@ -57,20 +60,14 @@ public class Main implements MouseListener{
 		iShipVer = new ImageIcon(Main.class.getResource("/shipVer.png"));
 		iShipHor = new ImageIcon(Main.class.getResource("/shipHor.png"));
 		imgVer = iShipVer.getImage();
-		iShipVer.setImage(imgVer.getScaledInstance(60, (60*5), java.awt.Image.SCALE_SMOOTH));
 		imgHor = iShipHor.getImage();
-		iShipHor.setImage(imgHor.getScaledInstance((60*5), 60, java.awt.Image.SCALE_SMOOTH));
-		carrier1 = new ship(-1000,-1000, 5, iShipVer, iShipHor); carrier2 = new ship(-1000,-1000, 5, iShipVer, iShipHor);
-		iShipVer.setImage(imgVer.getScaledInstance(60, (60*4), java.awt.Image.SCALE_SMOOTH));
-		iShipHor.setImage(imgHor.getScaledInstance((60*4), 60, java.awt.Image.SCALE_SMOOTH));
-		battleship1 = new ship(-1000,-1000, 4, iShipVer, iShipHor); battleship2 = new ship(-1000,-1000, 4, iShipVer, iShipHor);
-		iShipVer.setImage(imgVer.getScaledInstance(60, (60*3), java.awt.Image.SCALE_SMOOTH));
-		iShipHor.setImage(imgHor.getScaledInstance((60*3), 60, java.awt.Image.SCALE_SMOOTH));
-		cruiser1 = new ship(-1000,-1000, 3, iShipVer, iShipHor); cruiser2 = new ship(-1000,-1000, 3, iShipVer, iShipHor);
-		submarine1 = new ship(-1000,-1000, 3, iShipVer, iShipHor); submarine2 = new ship(-1000,-1000, 3, iShipVer, iShipHor);
-		iShipVer.setImage(imgVer.getScaledInstance(60, (60*2), java.awt.Image.SCALE_SMOOTH));
-		iShipHor.setImage(imgHor.getScaledInstance((60*2), 60, java.awt.Image.SCALE_SMOOTH));
-		destroyer1 = new ship(-1000,-1000, 2, iShipVer, iShipHor); destroyer2 = new ship(-1000,-1000, 2, iShipVer, iShipHor);
+		
+		carrier1 = new ship(-1000,-1000, 5); carrier2 = new ship(-1000,-1000, 5);
+		battleship1 = new ship(-1000,-1000, 4); battleship2 = new ship(-1000,-1000, 4);
+		cruiser1 = new ship(-1000,-1000, 3); cruiser2 = new ship(-1000,-1000, 3);
+		submarine1 = new ship(-1000,-1000, 3); submarine2 = new ship(-1000,-1000, 3);
+
+		destroyer1 = new ship(-1000,-1000, 2); destroyer2 = new ship(-1000,-1000, 2);
 		
 		if(player == "HOST"){
 			sL.setText("YOUR BOARD | ");
@@ -88,9 +85,12 @@ public class Main implements MouseListener{
 		labels.add(tL);
 		labels.add(mL);
 		
-		JLabel rotation = new JLabel("");
-		JButton rotates = new JButton("");
-	
+		JButton rotates = new JButton("ROTATE SHIPS");
+		rotates.addActionListener(new ActionListener() { 
+			  public void actionPerformed(ActionEvent e) { 
+				  setShips();
+			  }});
+		labels.add(rotates);
 
 		conv.add(labels, BorderLayout.NORTH);
 		conv.add(gamePane, BorderLayout.CENTER);
@@ -107,11 +107,9 @@ public class Main implements MouseListener{
 
 	private void phase1(){
 		tL.setText("IF YOUR SEEING THIS SOMETHING IS BROKEN");
-		sL.setText("HOW BOARD? ");
-		mL.setText("SO BOARD!");
-		if(player == "HOST"){
+		if(player == "HOST'S TURN"){
 			tL.setText(p1t);
-		}else if (player == "CLIENT"){
+		}else if (player == "CLIENT'S TURN"){
 			tL.setText(p2t);
 		}
 	}
@@ -122,15 +120,18 @@ public class Main implements MouseListener{
 		}else if(player == "CLIENT"){
 			carrier2.rotate(); battleship2.rotate(); cruiser2.rotate(); submarine2.rotate(); destroyer2.rotate();
 		}
+		
+		gamePane.repaint();
 	}
 	
 	private class ship {
 		private int x, y, health;
 		private ImageIcon n;
-		private ImageIcon imgVer;
-		private ImageIcon imgHor;
+		private ImageIcon inImgVer;
+		private ImageIcon inImgHor;
 		private boolean dead = false;
 		private Point[] weakPoints;
+		boolean token1 = false;
 		
 		//so im thinking we have an array of tiles and when a tile is hit it finds its corrasponding ship
 		// this ship then "takes a hit" and we subtract one from its health.
@@ -141,17 +142,17 @@ public class Main implements MouseListener{
 		/////////////////////////////
 		//give ships array of points to compare for taking damage, delete points from array as time goes on to prevent bugs
 
-		public ship(int x, int y, int health, ImageIcon imgVer, ImageIcon imgHor) {
+		public ship(int x, int y, int health) {
 			this.x = x;
 			this.y = y;
-			this.imgVer = imgVer;
-			this.imgHor = imgHor;
 			this.health = health;
-			this.n = imgVer;
 			weakPoints = new Point[health];
 			for(int i = 0; i < weakPoints.length; i++) {
 			    weakPoints[i] = new Point();
 			}
+			this.inImgVer.setImage(imgVer.getScaledInstance(60, (60*health), java.awt.Image.SCALE_SMOOTH));
+			this.inImgHor.setImage(imgHor.getScaledInstance((60*health), 60, java.awt.Image.SCALE_SMOOTH));
+			this.n = inImgVer;
 		}
 
 		public int getx() {
@@ -184,8 +185,11 @@ public class Main implements MouseListener{
 		}
 
 		public void rotate() {
-			if (token1 == false){n = imgHor; token1 = true;}
-			else{n = imgVer; token1 = false;}
+			
+			if (token1 == false){n = inImgHor; token1 = true;}
+			else{n = inImgVer; token1 = false;}
+			
+	
 		}
 
 		public void paint(Graphics g) {
