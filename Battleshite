@@ -310,6 +310,10 @@ public class Main implements MouseListener, MouseMotionListener {
 					java.awt.Image.SCALE_SMOOTH));
 			this.n = inImgVer;
 		}
+		
+		public void takeDamage(){
+		health = health - 1;
+		}
 
 		public void lanRotate(boolean e) {
 			if (e == true) {
@@ -534,70 +538,70 @@ public class Main implements MouseListener, MouseMotionListener {
 		for (int i = 0; i < carrier1.weakPoints.length; i++) {
 			if (carrier1.weakPoints[i].equals(ammo[booms - 1].target)) {
 				carrier1.weakPoints[i].setLocation(-1000, -1000);
-				carrier1.health =+ -1;
+				carrier1.takeDamage();
 				ammo[booms - 1].setImage(iHit);
 			}
 		}
 		for (int i = 0; i < battleship1.weakPoints.length; i++) {
 			if (battleship1.weakPoints[i].equals(ammo[booms - 1].target)) {
 				battleship1.weakPoints[i].setLocation(-1000, -1000);
-				battleship1.health = +-1;
+				battleship1.takeDamage();
 				ammo[booms - 1].setImage(iHit);
 			}
 		}
 		for (int i = 0; i < cruiser1.weakPoints.length; i++) {
 			if (cruiser1.weakPoints[i].equals(ammo[booms - 1].target)) {
 				cruiser1.weakPoints[i].setLocation(-1000, -1000);
-				cruiser1.health = +-1;
+				cruiser1.takeDamage();
 				ammo[booms - 1].setImage(iHit);
 			}
 		}
 		for (int i = 0; i < submarine1.weakPoints.length; i++) {
 			if (submarine1.weakPoints[i].equals(ammo[booms - 1].target)) {
 				submarine1.weakPoints[i].setLocation(-1000, -1000);
-				submarine1.health = +-1;
+				submarine1.takeDamage();
 				ammo[booms - 1].setImage(iHit);
 			}
 		}
 		for (int i = 0; i < destroyer1.weakPoints.length; i++) {
 			if (destroyer1.weakPoints[i].equals(ammo[booms - 1].target)) {
 				destroyer1.weakPoints[i].setLocation(-1000, -1000);
-				destroyer1.health = +-1;
+				destroyer1.takeDamage();
 				ammo[booms - 1].setImage(iHit);
 			}
 		}
 		for (int i = 0; i < carrier2.weakPoints.length; i++) {
 			if (carrier2.weakPoints[i].equals(ammo[booms - 1].target)) {
 				carrier2.weakPoints[i].setLocation(-1000, -1000);
-				carrier2.health = +-1;
+				carrier2.takeDamage();
 				ammo[booms - 1].setImage(iHit);
 			}
 		}
 		for (int i = 0; i < battleship2.weakPoints.length; i++) {
 			if (battleship2.weakPoints[i].equals(ammo[booms - 1].target)) {
 				battleship2.weakPoints[i].setLocation(-1000, -1000);
-				battleship2.health = +-1;
+				battleship2.takeDamage();
 				ammo[booms - 1].setImage(iHit);
 			}
 		}
 		for (int i = 0; i < cruiser2.weakPoints.length; i++) {
 			if (cruiser2.weakPoints[i].equals(ammo[booms - 1].target)) {
 				cruiser2.weakPoints[i].setLocation(-1000, -1000);
-				cruiser2.health = +-1;
+				cruiser2.takeDamage();
 				ammo[booms - 1].setImage(iHit);
 			}
 		}
 		for (int i = 0; i < submarine2.weakPoints.length; i++) {
 			if (submarine2.weakPoints[i].equals(ammo[booms - 1].target)) {
 				submarine2.weakPoints[i].setLocation(-1000, -1000);
-				submarine2.health = +-1;
+				submarine2.takeDamage();
 				ammo[booms - 1].setImage(iHit);
 			}
 		}
 		for (int i = 0; i < destroyer2.weakPoints.length; i++) {
 			if (destroyer2.weakPoints[i].equals(ammo[booms - 1].target)) {
 				destroyer2.weakPoints[i].setLocation(-1000, -1000);
-				destroyer2.health =+ -1;
+				destroyer2.takeDamage();
 				ammo[booms - 1].setImage(iHit);
 			}
 		}
