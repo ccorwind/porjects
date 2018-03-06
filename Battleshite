@@ -41,7 +41,6 @@ public class Main implements MouseListener, MouseMotionListener {
 	private String p1t = "Your Turn", p2t = "Their Turn", player = "";
 	private ImageIcon iShipVer = new ImageIcon(Main.class.getResource("/shipVer.png")),
 			iShipHor = new ImageIcon(Main.class.getResource("/shipHor.png")),
-			iMiss = new ImageIcon(Main.class.getResource("/Miss.png")),
 			iHit = new ImageIcon(Main.class.getResource("/Hit.png"));
 	private Image imgVer = iShipVer.getImage(), imgHor = iShipHor.getImage();
 
@@ -105,51 +104,68 @@ public class Main implements MouseListener, MouseMotionListener {
 	private void whileConnected() {
 		do {
 			try {
+				Point z = (Point) input.readObject();
+				Thread.sleep(1000);
 				if (gamePhase == 0) {
-					if (input.readObject() instanceof ship) {
-						if (player == "HOST") {
-							if (enPlace == 0) {
-								carrier2 = (ship) input.readObject();
-								enPlace++;
-							} else if (enPlace == 1) {
-								battleship2 = (ship) input.readObject();
-								enPlace++;
-							} else if (enPlace == 2) {
-								cruiser2 = (ship) input.readObject();
-								enPlace++;
-							} else if (enPlace == 3) {
-								submarine2 = (ship) input.readObject();
-								enPlace++;
-							} else if (enPlace == 4) {
-								destroyer2 = (ship) input.readObject();
-								enPlace = 28112015;
-							}
-						} else if (player == "CLIENT") {
-							if (enPlace == 0) {
-								carrier1 = (ship) input.readObject();
-								enPlace++;
-							} else if (enPlace == 1) {
-								battleship1 = (ship) input.readObject();
-								enPlace++;
-							} else if (enPlace == 2) {
-								cruiser1 = (ship) input.readObject();
-								enPlace++;
-							} else if (enPlace == 3) {
-								submarine1 = (ship) input.readObject();
-								enPlace++;
-							} else if (enPlace == 4) {
-								destroyer1 = (ship) input.readObject();
-								enPlace = 27102016;
-							}
+					if (player == "HOST") {
+						if (enPlace == 0) {
+							carrier2.lanRotate((boolean) input.readObject());
+							carrier2.setXY(z.x, z.y);
+							enPlace++;
+						} else if (enPlace == 1) {
+							battleship2.lanRotate((boolean) input.readObject());
+							battleship2.setXY(z.x, z.y);
+							enPlace++;
+						} else if (enPlace == 2) {
+							cruiser2.lanRotate((boolean) input.readObject());
+							cruiser2.setXY(z.x, z.y);
+							enPlace++;
+						} else if (enPlace == 3) {
+							submarine2.lanRotate((boolean) input.readObject());
+							submarine2.setXY(z.x, z.y);
+							enPlace++;
+						} else if (enPlace == 4) {
+							destroyer2.lanRotate((boolean) input.readObject());
+							destroyer2.setXY(z.x, z.y);
+							enPlace = 9;
 						}
-						if (shipPlace > 7 && enPlace > 7) {
+						if (shipPlace > 5 && enPlace > 5) {
+							phase1();
+							gamePhase = 1;
+						}
+					} else if (player == "CLIENT") {
+						if (enPlace == 0) {
+							carrier1.lanRotate((boolean) input.readObject());
+							carrier1.setXY(z.x, z.y);
+							enPlace++;
+						} else if (enPlace == 1) {
+							battleship1.lanRotate((boolean) input.readObject());
+							battleship1.setXY(z.x, z.y);
+							enPlace++;
+						} else if (enPlace == 2) {
+							cruiser1.lanRotate((boolean) input.readObject());
+							cruiser1.setXY(z.x, z.y);
+							enPlace++;
+						} else if (enPlace == 3) {
+							submarine1.lanRotate((boolean) input.readObject());
+							submarine1.setXY(z.x, z.y);
+							enPlace++;
+						} else if (enPlace == 4) {
+							destroyer1.lanRotate((boolean) input.readObject());
+							destroyer1.setXY(z.x, z.y);
+							enPlace = 27102016;
+						}
+						if (shipPlace > 5 && enPlace > 5) {
+							phase1();
 							gamePhase = 1;
 						}
 					}
 				} else if (gamePhase == 1) {
+					bombStrike(z);
 				}
 			} catch (Exception e) {
 			}
+
 		} while (isConnected);
 	}
 
@@ -209,14 +225,17 @@ public class Main implements MouseListener, MouseMotionListener {
 		conv.setBackground(Color.DARK_GRAY);
 		gamePane.addMouseListener(this);
 		gamePane.addMouseMotionListener(this);
-		SwingUtilities.invokeLater(new Runnable() {
+		System.out.print(isConnected);
+		Thread t1 = new Thread(new Runnable() {
 			public void run() {
 				whileConnected();
 			}
 		});
+		t1.start();
 	}
 
 	private void phase1() {
+		ammo[booms] = new bomb(-1000, -1000);
 		tL.setText("IF YOUR SEEING THIS SOMETHING IS BROKEN");
 		if (player == "HOST") {
 			tL.setText(p1t);
@@ -251,7 +270,6 @@ public class Main implements MouseListener, MouseMotionListener {
 		private boolean dead = false;
 		private Point[] weakPoints;
 		boolean token1 = false;
-
 		// so im thinking we have an array of tiles and when a tile is hit it finds its
 		// corrasponding ship
 		// this ship then "takes a hit" and we subtract one from its health.
@@ -276,6 +294,12 @@ public class Main implements MouseListener, MouseMotionListener {
 			this.inImgVer.setImage(imgVer.getScaledInstance(60, (60 * health), java.awt.Image.SCALE_SMOOTH));
 			this.inImgHor.setImage(imgHor.getScaledInstance((60 * health), 60, java.awt.Image.SCALE_SMOOTH));
 			this.n = inImgVer;
+		}
+
+		public void lanRotate(boolean e) {
+			if (e == true) {
+				n = inImgHor;
+			}
 		}
 
 		public void setWeakPoints() {
@@ -369,14 +393,13 @@ public class Main implements MouseListener, MouseMotionListener {
 
 	private class bomb {
 		private Point target;
-		private ImageIcon n;
-
+		private ImageIcon n = new ImageIcon(Main.class.getResource("/Miss.png"));
+		
 		public bomb(int x, int y) {
 			target = new Point(x, y);
 		}
 
 		public void setImage(ImageIcon f) {
-			n = new ImageIcon();
 			n = f;
 		}
 
@@ -385,8 +408,7 @@ public class Main implements MouseListener, MouseMotionListener {
 		}
 	}
 
-	private void endgames() {
-
+	private void endGames() {
 		// just make endgames do everything it already repaints it just needs to
 		// add the damage marker and do the math.
 		if (carrier1.health == 0) {
@@ -487,8 +509,9 @@ public class Main implements MouseListener, MouseMotionListener {
 	}
 
 	private void bombStrike(Point z) {
-		booms += 1;
-		ammo[booms] = new bomb(z.x, z.y);
+		ammo[booms+1] = new bomb(booms, booms);
+		booms++;
+		ammo[booms-1].target.setLocation(z);
 		try {
 			output.writeObject(z);
 			output.flush();
@@ -496,79 +519,76 @@ public class Main implements MouseListener, MouseMotionListener {
 			e.printStackTrace();
 		}
 		for (int i = 0; i < carrier1.weakPoints.length; i++) {
-			if (carrier1.weakPoints[i].equals(ammo[booms].target)) {
+			if (carrier1.weakPoints[i].equals(ammo[booms-1].target)) {
 				carrier1.weakPoints[i].setLocation(-1000, -1000);
 				carrier1.health = +-1;
-				ammo[booms].setImage(iHit);
+				ammo[booms -1].setImage(iHit);
 			}
 		}
 		for (int i = 0; i < battleship1.weakPoints.length; i++) {
-			if (battleship1.weakPoints[i].equals(ammo[booms].target)) {
+			if (battleship1.weakPoints[i].equals(ammo[booms -1].target)) {
 				battleship1.weakPoints[i].setLocation(-1000, -1000);
 				battleship1.health = +-1;
-				ammo[booms].setImage(iHit);
+				ammo[booms -1].setImage(iHit);
 			}
 		}
 		for (int i = 0; i < cruiser1.weakPoints.length; i++) {
-			if (cruiser1.weakPoints[i].equals(ammo[booms].target)) {
+			if (cruiser1.weakPoints[i].equals(ammo[booms -1].target)) {
 				cruiser1.weakPoints[i].setLocation(-1000, -1000);
 				cruiser1.health = +-1;
-				ammo[booms].setImage(iHit);
+				ammo[booms -1].setImage(iHit);
 			}
 		}
 		for (int i = 0; i < submarine1.weakPoints.length; i++) {
-			if (submarine1.weakPoints[i].equals(ammo[booms].target)) {
+			if (submarine1.weakPoints[i].equals(ammo[booms -1].target)) {
 				submarine1.weakPoints[i].setLocation(-1000, -1000);
 				submarine1.health = +-1;
-				ammo[booms].setImage(iHit);
+				ammo[booms -1].setImage(iHit);
 			}
 		}
 		for (int i = 0; i < destroyer1.weakPoints.length; i++) {
-			if (destroyer1.weakPoints[i].equals(ammo[booms].target)) {
+			if (destroyer1.weakPoints[i].equals(ammo[booms -1].target)) {
 				destroyer1.weakPoints[i].setLocation(-1000, -1000);
 				destroyer1.health = +-1;
-				ammo[booms].setImage(iHit);
+				ammo[booms -1].setImage(iHit);
 			}
 		}
 		for (int i = 0; i < carrier2.weakPoints.length; i++) {
-			if (carrier2.weakPoints[i].equals(ammo[booms].target)) {
+			if (carrier2.weakPoints[i].equals(ammo[booms -1].target)) {
 				carrier2.weakPoints[i].setLocation(-1000, -1000);
 				carrier2.health = +-1;
-				ammo[booms].setImage(iHit);
+				ammo[booms -1].setImage(iHit);
 			}
 		}
 		for (int i = 0; i < battleship2.weakPoints.length; i++) {
-			if (battleship2.weakPoints[i].equals(ammo[booms].target)) {
+			if (battleship2.weakPoints[i].equals(ammo[booms -1].target)) {
 				battleship2.weakPoints[i].setLocation(-1000, -1000);
 				battleship2.health = +-1;
-				ammo[booms].setImage(iHit);
+				ammo[booms -1].setImage(iHit);
 			}
 		}
 		for (int i = 0; i < cruiser2.weakPoints.length; i++) {
-			if (cruiser2.weakPoints[i].equals(ammo[booms].target)) {
+			if (cruiser2.weakPoints[i].equals(ammo[booms -1].target)) {
 				cruiser2.weakPoints[i].setLocation(-1000, -1000);
 				cruiser2.health = +-1;
-				ammo[booms].setImage(iHit);
+				ammo[booms -1].setImage(iHit);
 			}
 		}
 		for (int i = 0; i < submarine2.weakPoints.length; i++) {
-			if (submarine2.weakPoints[i].equals(ammo[booms].target)) {
+			if (submarine2.weakPoints[i].equals(ammo[booms -1].target)) {
 				submarine2.weakPoints[i].setLocation(-1000, -1000);
 				submarine2.health = +-1;
-				ammo[booms].setImage(iHit);
+				ammo[booms -1].setImage(iHit);
 			}
 		}
 		for (int i = 0; i < destroyer2.weakPoints.length; i++) {
-			if (destroyer2.weakPoints[i].equals(ammo[booms].target)) {
+			if (destroyer2.weakPoints[i].equals(ammo[booms -1].target)) {
 				destroyer2.weakPoints[i].setLocation(-1000, -1000);
 				destroyer2.health = +-1;
-				ammo[booms].setImage(iHit);
+				ammo[booms -1].setImage(iHit);
 			}
 		}
-		if (ammo[booms].n == null) {
-			ammo[booms].setImage(iMiss);
-		}
-
+		endGames();
 	}
 
 	public static void main(String[] args) {
@@ -590,7 +610,8 @@ public class Main implements MouseListener, MouseMotionListener {
 				if (player == "HOST" && z.x <= 479) {
 					if (shipPlace == 0) {
 						carrier1.setXY(z.x, z.y);
-						output.writeObject(carrier1);
+						output.writeObject(z);
+						output.writeObject(carrier1.token1);
 						shipPlace++;
 					} else if (shipPlace == 1) {
 						battleship1.setXY(z.x, z.y);
@@ -599,7 +620,8 @@ public class Main implements MouseListener, MouseMotionListener {
 									"Whoops can't place that there, it conflicts with one of your other ships");
 							battleship1.setXY(-1000, -1000);
 						} else {
-							output.writeObject(battleship1);
+							output.writeObject(z);
+							output.writeObject(battleship1.token1);
 							shipPlace++;
 						}
 					} else if (shipPlace == 2) {
@@ -609,7 +631,8 @@ public class Main implements MouseListener, MouseMotionListener {
 									"Whoops can't place that there, it conflicts with one of your other ships");
 							cruiser1.setXY(-1000, -1000);
 						} else {
-							output.writeObject(cruiser1);
+							output.writeObject(z);
+							output.writeObject(cruiser1.token1);
 							shipPlace++;
 						}
 					} else if (shipPlace == 3) {
@@ -620,7 +643,8 @@ public class Main implements MouseListener, MouseMotionListener {
 									"Whoops can't place that there, it conflicts with one of your other ships");
 							submarine1.setXY(-1000, -1000);
 						} else {
-							output.writeObject(submarine1);
+							output.writeObject(z);
+							output.writeObject(submarine1.token1);
 							shipPlace++;
 						}
 					} else if (shipPlace == 4) {
@@ -631,14 +655,20 @@ public class Main implements MouseListener, MouseMotionListener {
 									"Whoops can't place that there, it conflicts with one of your other ships");
 							destroyer1.setXY(-1000, -1000);
 						} else {
-							output.writeObject(battleship1);
+							output.writeObject(z);
+							output.writeObject(battleship1.token1);
 							shipPlace = 10241999;
+							if (shipPlace > 5 && enPlace > 5) {
+								phase1();
+								gamePhase = 1;
+							}
 						}
 					}
 				} else if (player == "CLIENT" && z.x >= 480) {
 					if (shipPlace == 0) {
 						carrier2.setXY(z.x, z.y);
-						output.writeObject(carrier2);
+						output.writeObject(z);
+						output.writeObject(carrier2.token1);
 						shipPlace++;
 					} else if (shipPlace == 1) {
 						battleship2.setXY(z.x, z.y);
@@ -647,7 +677,8 @@ public class Main implements MouseListener, MouseMotionListener {
 									"Whoops can't place that there, it conflicts with one of your other ships");
 							battleship2.setXY(-1000, -1000);
 						} else {
-							output.writeObject(battleship2);
+							output.writeObject(z);
+							output.writeObject(battleship2.token1);
 							shipPlace++;
 						}
 					} else if (shipPlace == 2) {
@@ -657,7 +688,8 @@ public class Main implements MouseListener, MouseMotionListener {
 									"Whoops can't place that there, it conflicts with one of your other ships");
 							cruiser2.setXY(-1000, -1000);
 						} else {
-							output.writeObject(cruiser2);
+							output.writeObject(z);
+							output.writeObject(cruiser2.token1);
 							shipPlace++;
 						}
 					} else if (shipPlace == 3) {
@@ -668,7 +700,8 @@ public class Main implements MouseListener, MouseMotionListener {
 									"Whoops can't place that there, it conflicts with one of your other ships");
 							submarine2.setXY(-1000, -1000);
 						} else {
-							output.writeObject(submarine2);
+							output.writeObject(z);
+							output.writeObject(submarine2.token1);
 							shipPlace++;
 						}
 					} else if (shipPlace == 4) {
@@ -679,26 +712,21 @@ public class Main implements MouseListener, MouseMotionListener {
 									"Whoops can't place that there, it conflicts with one of your other ships");
 							destroyer2.setXY(-1000, -1000);
 						} else {
-							output.writeObject(destroyer2);
+							output.writeObject(z);
+							output.writeObject(destroyer2.token1);
 							shipPlace = 10112014;
+							if (shipPlace > 5 && enPlace > 5) {
+								phase1();
+								gamePhase = 1;
+							}
 						}
 					}
 				}
 				output.flush();
 			} else if (gamePhase == 1) {
-				if (player == "HOST" && z.x >= 489) {
-					if (tL.getText() == p1t) {
-						bombStrike(z);
-						// disable clicking until it becomes their turn again
-						// if bomb x and y == a weakpoint then -- health and set image to hit // else
-						// set image to miss
-						tL.setText(p2t);
-					}
-				} else if (player == "CLIENT" && z.x <= 480) {
-					if (tL.getText() == p1t) {
-						bombStrike(z);
-						tL.setText(p2t);
-					}
+				if (tL.getText() == p1t) {
+					bombStrike(z);
+					tL.setText(p2t);
 				}
 			}
 			gamePane.repaint();
@@ -712,38 +740,40 @@ public class Main implements MouseListener, MouseMotionListener {
 	}
 
 	public void mouseExited(MouseEvent e) {
-		if (player == "HOST") {
-			if (shipPlace == 0) {
-				carrier1.setXY(-1000, -1000);
+		if (gamePhase == 0) {
+			if (player == "HOST") {
+				if (shipPlace == 0) {
+					carrier1.setXY(-1000, -1000);
+				}
+				if (shipPlace == 1) {
+					battleship1.setXY(-1000, -1000);
+				}
+				if (shipPlace == 2) {
+					cruiser1.setXY(-1000, -1000);
+				}
+				if (shipPlace == 3) {
+					submarine1.setXY(-1000, -1000);
+				}
+				if (shipPlace == 4) {
+					destroyer1.setXY(-1000, -1000);
+				}
 			}
-			if (shipPlace == 1) {
-				battleship1.setXY(-1000, -1000);
-			}
-			if (shipPlace == 2) {
-				cruiser1.setXY(-1000, -1000);
-			}
-			if (shipPlace == 3) {
-				submarine1.setXY(-1000, -1000);
-			}
-			if (shipPlace == 4) {
-				destroyer1.setXY(-1000, -1000);
-			}
-		}
-		if (player == "CLIENT") {
-			if (shipPlace == 0) {
-				carrier2.setXY(-1000, -1000);
-			}
-			if (shipPlace == 1) {
-				battleship2.setXY(-1000, -1000);
-			}
-			if (shipPlace == 2) {
-				cruiser2.setXY(-1000, -1000);
-			}
-			if (shipPlace == 3) {
-				submarine2.setXY(-1000, -1000);
-			}
-			if (shipPlace == 4) {
-				destroyer2.setXY(-1000, -1000);
+			if (player == "CLIENT") {
+				if (shipPlace == 0) {
+					carrier2.setXY(-1000, -1000);
+				}
+				if (shipPlace == 1) {
+					battleship2.setXY(-1000, -1000);
+				}
+				if (shipPlace == 2) {
+					cruiser2.setXY(-1000, -1000);
+				}
+				if (shipPlace == 3) {
+					submarine2.setXY(-1000, -1000);
+				}
+				if (shipPlace == 4) {
+					destroyer2.setXY(-1000, -1000);
+				}
 			}
 		}
 		gamePane.repaint();
@@ -764,39 +794,44 @@ public class Main implements MouseListener, MouseMotionListener {
 	@Override
 	public void mouseMoved(MouseEvent e) {
 		Point z = new Point(e.getPoint());
-		if (player == "HOST") {
-			if (shipPlace == 0) {
-				carrier1.setXY(z.x, z.y);
+		if (gamePhase == 0) {
+			if (player == "HOST") {
+				if (shipPlace == 0) {
+					carrier1.setXY(z.x, z.y);
+				}
+				if (shipPlace == 1) {
+					battleship1.setXY(z.x, z.y);
+				}
+				if (shipPlace == 2) {
+					cruiser1.setXY(z.x, z.y);
+				}
+				if (shipPlace == 3) {
+					submarine1.setXY(z.x, z.y);
+				}
+				if (shipPlace == 4) {
+					destroyer1.setXY(z.x, z.y);
+				}
 			}
-			if (shipPlace == 1) {
-				battleship1.setXY(z.x, z.y);
-			}
-			if (shipPlace == 2) {
-				cruiser1.setXY(z.x, z.y);
-			}
-			if (shipPlace == 3) {
-				submarine1.setXY(z.x, z.y);
-			}
-			if (shipPlace == 4) {
-				destroyer1.setXY(z.x, z.y);
+			if (player == "CLIENT") {
+				if (shipPlace == 0) {
+					carrier2.setXY(z.x, z.y);
+				}
+				if (shipPlace == 1) {
+					battleship2.setXY(z.x, z.y);
+				}
+				if (shipPlace == 2) {
+					cruiser2.setXY(z.x, z.y);
+				}
+				if (shipPlace == 3) {
+					submarine2.setXY(z.x, z.y);
+				}
+				if (shipPlace == 4) {
+					destroyer2.setXY(z.x, z.y);
+				}
 			}
 		}
-		if (player == "CLIENT") {
-			if (shipPlace == 0) {
-				carrier2.setXY(z.x, z.y);
-			}
-			if (shipPlace == 1) {
-				battleship2.setXY(z.x, z.y);
-			}
-			if (shipPlace == 2) {
-				cruiser2.setXY(z.x, z.y);
-			}
-			if (shipPlace == 3) {
-				submarine2.setXY(z.x, z.y);
-			}
-			if (shipPlace == 4) {
-				destroyer2.setXY(z.x, z.y);
-			}
+		if (gamePhase == 1) {
+			ammo[booms].target.setLocation(z.x, z.y);
 		}
 		gamePane.repaint();
 
